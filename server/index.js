@@ -10,19 +10,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Middleware
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://vasaiproperty.co.in',
-    'https://www.vasaiproperty.co.in',
-    'http://vasaiproperty.co.in',
-    'http://www.vasaiproperty.co.in'
-  ],
-  credentials: true
-}));
-// ✅ CORS Middleware
+// ✅ Allowed origins defined FIRST
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://vasaiproperty.co.in',
+  'https://www.vasaiproperty.co.in'
+];
+
+// ✅ CORS middleware
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -35,8 +31,9 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ Handle preflight
-app.options('*', cors());
+// ✅ Preflight requests
+app.options("*", cors());
+
 
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));

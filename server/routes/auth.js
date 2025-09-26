@@ -11,6 +11,10 @@ let users = [];
 // Register
 router.post('/register', async (req, res) => {
   try {
+
+     console.log("Incoming register request:", req.body);       // Logs request body
+    console.log("JWT_SECRET exists:", !!process.env.JWT_SECRET); // Logs if JWT_SECRET is set
+
     const { name, email = '', phone, password } = req.body;
 
     // Check if user already exists by phone
@@ -43,9 +47,17 @@ router.post('/register', async (req, res) => {
     );
 
     // Send welcome email to user if email provided
-    if (email) {
-      await sendWelcomeEmail(email, name);
-    }
+    // Send emails safely
+try {
+  if (email) {
+    await sendWelcomeEmail(email, name);
+  }
+  await sendAdminNotification('new_user', { name, email, phone });
+} catch (emailError) {
+  console.error("Email sending failed:", emailError);
+  // optionally continue without failing registration
+}
+
 
     // Notify admin
     await sendAdminNotification('new_user', { name, email, phone });
