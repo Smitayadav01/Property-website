@@ -23,6 +23,8 @@ const Wishlist = () => {
   const [wishlistProperties, setWishlistProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const { isAuthenticated } = useAuth();
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -35,7 +37,7 @@ const Wishlist = () => {
   const fetchWishlistProperties = async () => {
     try {
       // Get wishlist property IDs
-      const wishlistResponse = await axios.get('http://localhost:5000/api/wishlist');
+      const wishlistResponse = await axios.get(`${API_BASE_URL}/api/wishlist`);
       const wishlistIds = wishlistResponse.data;
 
       if (wishlistIds.length === 0) {
@@ -45,7 +47,7 @@ const Wishlist = () => {
       }
 
       // Get all properties
-      const propertiesResponse = await axios.get('http://localhost:5000/api/properties');
+      const propertiesResponse = await axios.get(`${API_BASE_URL}/api/properties`);
       const allProperties = propertiesResponse.data;
 
       // Filter properties that are in wishlist
@@ -64,7 +66,7 @@ const Wishlist = () => {
 
   const removeFromWishlist = async (propertyId: string) => {
     try {
-      await axios.delete(`http://localhost:5000/api/wishlist/${propertyId}`);
+      await axios.delete(`${API_BASE_URL}/api/wishlist/${propertyId}`);
       setWishlistProperties(prev => prev.filter(prop => prop.id !== propertyId));
       toast.success('Removed from wishlist');
     } catch (error) {

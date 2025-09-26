@@ -27,6 +27,8 @@ const PropertyDetail = () => {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { isAuthenticated } = useAuth();
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     if (id) {
@@ -39,7 +41,7 @@ const PropertyDetail = () => {
 
   const fetchProperty = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/properties/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/api/properties/${id}`);
       setProperty(response.data);
     } catch (error) {
       console.error('Error fetching property:', error);
@@ -51,7 +53,7 @@ const PropertyDetail = () => {
 
   const fetchWishlist = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/wishlist');
+      const response = await axios.get(`${API_BASE_URL}/api/wishlist`);
       setWishlist(response.data);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
@@ -70,11 +72,11 @@ const PropertyDetail = () => {
       const isWishlisted = wishlist.includes(property.id);
       
       if (isWishlisted) {
-        await axios.delete(`http://localhost:5000/api/wishlist/${property.id}`);
+        await axios.delete(`${API_BASE_URL}/api/wishlist/${property.id}`);
         setWishlist(prev => prev.filter(id => id !== property.id));
         toast.success('Removed from wishlist');
       } else {
-        await axios.post(`http://localhost:5000/api/wishlist/${property.id}`);
+        await axios.post(`${API_BASE_URL}/api/wishlist/${property.id}`);
         setWishlist(prev => [...prev, property.id]);
         toast.success('Added to wishlist');
       }

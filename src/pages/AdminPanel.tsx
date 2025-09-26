@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { Plus, CreditCard as Edit, Trash2, Save, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
@@ -26,6 +26,8 @@ const AdminPanel = () => {
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const [formData, setFormData] = useState({
     title: '',
@@ -60,7 +62,7 @@ const AdminPanel = () => {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/properties');
+      const response = await axios.get(`${API_BASE_URL}/api/properties`);
       setProperties(response.data);
     } catch (error) {
       console.error('Error fetching properties:', error);
@@ -80,10 +82,10 @@ const AdminPanel = () => {
 
     try {
       if (editingProperty) {
-        await axios.put(`http://localhost:5000/api/properties/${editingProperty.id}`, propertyData);
+        await axios.put(`${API_BASE_URL}/api/properties/${editingProperty.id}`, propertyData);
         toast.success('Property updated successfully');
       } else {
-        await axios.post('http://localhost:5000/api/properties', propertyData);
+        await axios.post(`${API_BASE_URL}/api/properties`, propertyData);
         toast.success('Property added successfully');
       }
 
@@ -109,7 +111,7 @@ const AdminPanel = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this property?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/properties/${id}`);
+        await axios.delete(`${API_BASE_URL}/api/properties/${id}`);
         toast.success('Property deleted successfully');
         fetchProperties();
       } catch (error) {

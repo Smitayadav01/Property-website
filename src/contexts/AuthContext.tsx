@@ -32,6 +32,9 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  
+  // API base URL - will use environment variable or fallback to local
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -46,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (phone: string, password: string): Promise<boolean> => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
         phone,
         password
       });
@@ -71,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const adminLogin = async (phone: string, password: string): Promise<boolean> => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/admin-login', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/admin-login`, {
         phone,
         password
       });
@@ -96,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (userData: any): Promise<boolean> => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      const response = await axios.post(`${API_BASE_URL}/api/auth/register`, userData);
       
       const { token: newToken, user: newUser } = response.data;
       
