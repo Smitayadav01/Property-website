@@ -16,7 +16,9 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:3000',
     'https://vasaiproperty.co.in',
-    'https://www.vasaiproperty.co.in'
+    'https://www.vasaiproperty.co.in',
+    'http://vasaiproperty.co.in',
+    'http://www.vasaiproperty.co.in'
   ],
   credentials: true
 }));
