@@ -12,9 +12,12 @@ const PORT = process.env.PORT || 10000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-hostinger-domain.com', 'https://www.your-hostinger-domain.com']
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://vasaiproperty.co.in',
+    'https://www.vasaiproperty.co.in'
+  ],
   credentials: true
 }));
 app.use(express.json());
