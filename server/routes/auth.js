@@ -44,29 +44,13 @@ router.post('/register', async (req, res) => {
 
     // Send emails asynchronously without blocking the response
     if (email) {
-      console.log(`📧 Sending welcome email to: ${email}`);
-      sendWelcomeEmail(email, name).then(result => {
-        if (result.success) {
-          console.log('✅ Welcome email sent successfully');
-        } else {
-          console.error('❌ Welcome email failed:', result.error);
-        }
-      }).catch(error => {
-        console.error('❌ Welcome email error:', error.message);
+      sendWelcomeEmail(email, name).catch(error => {
+        console.error('Welcome email failed:', error.message);
       });
-    } else {
-      console.log('📧 No email provided, skipping welcome email');
     }
 
-    console.log('📧 Sending admin notification');
-    sendAdminNotification('new_user', { name, email: email || 'Not provided', phone }).then(result => {
-      if (result.success) {
-        console.log('✅ Admin notification sent successfully');
-      } else {
-        console.error('❌ Admin notification failed:', result.error);
-      }
-    }).catch(error => {
-      console.error('❌ Admin notification error:', error.message);
+    sendAdminNotification('new_user', { name, email, phone }).catch(error => {
+      console.error('Admin notification failed:', error.message);
     });
 
     res.status(201).json({

@@ -3,83 +3,33 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create transporter with proper Gmail SMTP configuration
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  port: 587,
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
   secure: false,
-  requireTLS: true,
-  connectionTimeout: 60000,
-  greetingTimeout: 30000,
-  socketTimeout: 60000,
+  connectionTimeout: 10000,
+  greetingTimeout: 5000,
+  socketTimeout: 10000,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
   }
 });
 
-// Verify transporter configuration
-const verifyTransporter = async () => {
-  try {
-    await transporter.verify();
-    console.log('✅ SMTP Server is ready to send emails');
-    return true;
-  } catch (error) {
-    console.error('❌ SMTP Server verification failed:', error.message);
-    return false;
-  }
-};
-
-// Initialize verification
-verifyTransporter();
-
 export const sendEmail = async (to, subject, html) => {
-  // Check if SMTP credentials are configured
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.log('⚠️ SMTP credentials not configured, skipping email send');
-    return { success: false, error: 'SMTP not configured' };
-  }
-
-  // Validate email address
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(to)) {
-    console.log('⚠️ Invalid email address:', to);
-    return { success: false, error: 'Invalid email address' };
-  }
-
   try {
     const mailOptions = {
       from: `"Vasai Properties" <${process.env.SMTP_USER}>`,
       to,
       subject,
-      html,
-      headers: {
-        'X-Priority': '1',
-        'X-MSMail-Priority': 'High',
-        'Importance': 'high'
-      }
+      html
     };
 
-    console.log(`📧 Attempting to send email to: ${to}`);
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully:', info.messageId);
+    console.log('Email sent:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('❌ Email send error:', error.message);
-    
-    // Provide specific error messages
-    if (error.code === 'ETIMEDOUT') {
-      console.error('💡 Suggestion: Check if Gmail App Password is correct and 2FA is enabled');
-    } else if (error.code === 'EAUTH') {
-      console.error('💡 Suggestion: Verify Gmail credentials and App Password');
-    } else if (error.code === 'ECONNECTION') {
-      console.error('💡 Suggestion: Check internet connection and firewall settings');
-    }
-    
+    console.error('Email send error:', error);
     return { success: false, error: error.message };
   }
 };
