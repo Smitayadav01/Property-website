@@ -37,11 +37,13 @@ router.post('/:propertyId', authenticateToken, async (req, res) => {
       };
       
       // Notify admin
-      await sendAdminNotification('wishlist_update', {
+      sendAdminNotification('wishlist_update', {
         name: req.user.name,
         email: req.user.email,
-        phone: 'N/A'
-      }, propertyInfo);
+        phone: req.user.phone || 'N/A'
+      }, propertyInfo).catch(error => {
+        console.error('Wishlist notification failed:', error.message);
+      });
     }
     
     res.json({ message: 'Added to wishlist successfully' });
